@@ -26,12 +26,20 @@ class Dashboard(tk.Tk):
         # À compléter :
         # Instanciez AffichageEtat, AffichageTemps, BarreProgression,
         # CompteurSessions et LoggerSession
-        pass
+        self._affichage_etat = AffichageEtat()
+        self._affichage_temps = AffichageTemps()
+        self._barre_progression = BarreProgression()
+        self._compteur_sessions = CompteurSessions()
+        self._logger_session = LoggerSession()
 
     def _abonner_observateurs(self) -> None:
         # À compléter :
         # Abonnez tous les observateurs au minuteur
-        pass
+        self._minuteur.ajouter_observateur(self._affichage_etat)
+        self._minuteur.ajouter_observateur(self._affichage_temps)
+        self._minuteur.ajouter_observateur(self._barre_progression)
+        self._minuteur.ajouter_observateur(self._compteur_sessions)
+        self._minuteur.ajouter_observateur(self._logger_session)
 
     def _creer_boutons(self) -> None:
         frame = tk.Frame(self)
@@ -51,24 +59,35 @@ class Dashboard(tk.Tk):
     def _demarrer(self) -> None:
         # À compléter :
         # Activez le minuteur et démarrez la boucle _tick()
+        self._en_marche = True
+        self._tick()
         # Mettez à jour les boutons
-        pass
+        self._btn_start.config(state=tk.DISABLED)
+        self._btn_pause.config(state=tk.NORMAL)
 
     def _pause(self) -> None:
         # À compléter :
         # Appelez basculer_pause() sur le minuteur
+        self._btn_pause.config(text="Reprendre" if self._minuteur.en_pause else "Pause")
         # Mettez à jour le texte du bouton
+        self._btn_pause.config(state=tk.NORMAL)
         # Si on reprend, relancez _tick()
-        pass
+        self._minuteur.basculer_pause()
+        if not self._minuteur.en_pause:
+            self._tick()
 
     def _reset(self) -> None:
         # À compléter :
         # Réinitialisez le minuteur
+        self._minuteur.reinitialiser()
         # Mettez à jour les boutons
-        pass
+        self._btn_start.config(state=tk.NORMAL)
+        self._btn_pause.config(state=tk.DISABLED, text="Pause")
 
     def _tick(self) -> None:
         # À compléter :
         # Si en marche et pas en pause : appeler minuteur.tick()
         # Planifier le prochain appel avec self.after()
-        pass
+        if self._en_marche and not self._minuteur.en_pause:
+            self._minuteur.tick()
+            self.after(self.INTERVALLE_MS, self._tick)

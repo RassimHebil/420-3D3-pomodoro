@@ -11,6 +11,9 @@ class AffichageTemps(Observateur):
     def actualiser(self, sujet) -> None:
         # À compléter :
         # Récupérez temps_restant depuis sujet.get_donnees()
+        temps_restant = sujet.get_donnees()["temps_restant"]
         # Calculez minutes et secondes
+        minutes = temps_restant // 60
+        secondes = temps_restant % 60
         # Mettez à jour le label au format "MM:SS"
-        pass
+        self._label.config(text=f"{minutes:02d}:{secondes:02d}")
